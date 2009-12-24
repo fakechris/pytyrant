@@ -158,10 +158,15 @@ def socksend(sock, lst):
 
 def sockrecv(sock, bytes):
     d = ''
+    count = 0
     while len(d) < bytes:
-        d += sock.recv(min(8192, bytes - len(d)))
+        result = sock.recv(min(8192, bytes - len(d)))
+        if not len(result):
+            count += 1
+        if count > 3:
+            raise TyrantError()
+        d += result
     return d
-
 
 def socksuccess(sock):
     fail_code = ord(sockrecv(sock, 1))
